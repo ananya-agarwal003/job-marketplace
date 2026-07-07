@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Post a Job</title>
+</head>
+<body>
+  <h2>Post a Job</h2>
+  <form id="jobForm">
+    <input type="text" id="title" placeholder="Job Title" required><br><br>
+    <textarea id="description" placeholder="Description" required></textarea><br><br>
+    <input type="number" id="budget" placeholder="Budget" required><br><br>
+    <input type="text" id="skills" placeholder="Skills (comma separated)"><br><br>
+    <button type="submit">Post Job</button>
+  </form>
+  <p id="message"></p>
+
+  <script>
+    document.getElementById('jobForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const token = localStorage.getItem('token');
+
+      if (!token) {
+        document.getElementById('message').innerText = 'Please login first';
+        return;
+      }
+
+      const title = document.getElementById('title').value;
+      const description = document.getElementById('description').value;
+      const budget = document.getElementById('budget').value;
+      const skills = document.getElementById('skills').value.split(',').map(s => s.trim());
+
+      try {
+        const res = await fetch('http://localhost:5000/api/jobs', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+          },
+          body: JSON.stringify({ title, description, budget, skills })
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+          document.getElementById('message').innerText = 'Job posted successfully!';
+        } else {
+          document.getElementById('message').innerText = data.message || 'Failed to post job';
+        }
+      } catch (err) {
+        document.getElementById('message').innerText = 'Error connecting to server';
+      }
+    });
+  </script>
+</body>
+</html>

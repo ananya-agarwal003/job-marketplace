@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Apply to Job</title>
+</head>
+<body>
+  <h2>Apply to a Job</h2>
+  <form id="proposalForm">
+    <input type="text" id="jobId" placeholder="Job ID" required><br><br>
+    <input type="number" id="bidAmount" placeholder="Your Bid Amount" required><br><br>
+    <textarea id="coverLetter" placeholder="Cover Letter" required></textarea><br><br>
+    <button type="submit">Submit Proposal</button>
+  </form>
+  <p id="message"></p>
+
+  <script>
+    document.getElementById('proposalForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const token = localStorage.getItem('token');
+
+      if (!token) {
+        document.getElementById('message').innerText = 'Please login first';
+        return;
+      }
+
+      const jobId = document.getElementById('jobId').value;
+      const bidAmount = document.getElementById('bidAmount').value;
+      const coverLetter = document.getElementById('coverLetter').value;
+
+      try {
+        const res = await fetch('http://localhost:5000/api/proposals', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+          },
+          body: JSON.stringify({ jobId, bidAmount, coverLetter })
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+          document.getElementById('message').innerText = 'Proposal submitted successfully!';
+        } else {
+          document.getElementById('message').innerText = data.message || 'Failed to submit proposal';
+        }
+      } catch (err) {
+        document.getElementById('message').innerText = 'Error connecting to server';
+      }
+    });
+  </script>
+</body>
+</html>
