@@ -29,5 +29,3 @@ backend/
 3. Create a `.env` file with your MongoDB URI and JWT secret
 4. Run `node server.js` to start the server
 
-## Author
-Ananya Agarwal
